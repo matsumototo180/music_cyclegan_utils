@@ -29,46 +29,15 @@ fma/
 ・データをmp3形式からwav形式に変換する。
 
 fma_smallのデータはmp3形式であるが、pythonで扱いづらいのでwav形式に変換しておく。変換にはffmpegを使う。
-convMP3toWAV.shというシェルスクリプトで指定したフォルダ内のmp3ファイルをすべてwav形式に変換することができる。
+convMP3toWAV.pyというスクリプトで指定したフォルダ内のmp3ファイルをすべてwav形式に変換することができる。
 （上記スクリプトでは変換の際、データ量を小さくするために、変換の際にモノラル化とサンプリングレートを22050hzにダウンサンプリングしている。）
-
-sh convMP3toWAV.sh ./fma_small_separated/Rock/
-sh convMP3toWAV.sh ./fma_small_separated/Hip-Hop/
 
 
 ・wavファイルからCQT画像と位相行列を生成する。
 
-wavToCQT.shというシェルスクリプトで指定したフォルダ内のwavファイルからCQT画像と位相行列を生成することができる。
-Rock_CQTやHip-Hop_CQTというような名前のフォルダを作っておいて以下のようにスクリプトを実行する。
-
-sh wavToCQT.sh -i ./fma_small_separated/Rock/ -o ./fma_small_separated/Rock_CQT
-sh wavToCQT.sh -i ./fma_small_separated/Hip-Hop/ -o ./fma_small_separated/Hip-Hop_CQT
-
--oオプションで指定したフォルダに画像とnpyファイルが生成される。
-
+wavToCQT.pyというスクリプトで指定したフォルダ内のwavファイルからCQT画像と位相行列を生成することができる。
 
 ・CycleGANでトレーニングを行う。
 
 PytorchのCycleGAN（https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix）を使う。
-
-CQT画像を入力するためにdatasetsフォルダに以下のような構成でフォルダを作成し、CQT画像を配置する。
-pytorch-CycleGAN-and-pix2pix/
-   └ datasets/
-      └ cqt/
-         ├ trainA/
-         │   ├ Rock.000182.png
-         │      ︙
-         ├ trainB/
-         │   ├ Hip-Hop.000002.png
-         │      ︙
-         ├ testA/
-         │   ├ Rock.143095.png
-         │      ︙
-         └ testB/
-             ├ Hip-Hop.146681.png
-                ︙
-
-画像を配置したら、以下のようにトレーニングのスクリプトを実行する。（./options以下のスクリプトにオプションの一覧がある）
-
-python train.py --dataroot ./datasets/cqt --name cqt_cyclegan --model cycle_gan --input_nc 1 --output_nc 1
 
