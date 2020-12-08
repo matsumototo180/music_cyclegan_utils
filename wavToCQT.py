@@ -48,8 +48,16 @@ def wavToCQT(wav_path, output_path, sr, hl, crop, cl, stereo):
         out_path_phase = (out_path_phase / Path(filename))
 
         print(str(out_path_amp.name) + " [", str(i + 1), "/", total_length, "]", sep="")
-        utils.saveNpy(mag[:-1,:], out_path_amp)
-        utils.saveNpy(phase[:-1,:], out_path_phase)
+        
+        if mag.shape[0] % 2 != 0:
+            mag = mag[:-1,:]
+            phase = phase[:-1,:]
+        if mag.shape[1] % 2 != 0:
+            mag = mag[:,:-1]
+            phase = phase[:,:-1]
+        
+        utils.saveNpy(mag, out_path_amp)
+        utils.saveNpy(phase, out_path_phase)
     return
 
 if __name__ == '__main__':
