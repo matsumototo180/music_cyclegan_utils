@@ -10,6 +10,7 @@ class Options():
         self.defalut_wl = 1024
         self.defalut_hl = 512
         self.defalut_cl = 128
+        self.default_amp_only = False
 
         self.inverse = inverse
 
@@ -23,6 +24,7 @@ class Options():
         self.parser.add_argument('--wl', type=int, default='1024', help='window length')
         self.parser.add_argument('--hl', type=int, default='512', help='hop length')
         self.parser.add_argument('--cl', type=int, default='128', help='signal crop length')
+        self.parser.add_argument('--amp_only', action='store_true', help='if specified, discard phase output')
 
         if self.inverse:
             self.parser.add_argument('--phase_input', required=True, help='path to phase file or directory')
@@ -31,7 +33,7 @@ class Options():
         self.opt = self.parser.parse_args() 
         return self.opt
     
-    def parse(self, input, output = None, sr = None, stereo = None, crop = None, wl = None, hl = None, cl = None, phase_input = None):
+    def parse(self, input, output = None, sr = None, stereo = None, crop = None, wl = None, hl = None, cl = None, amp_only = None, phase_input = None):
 
         if self.inverse:
             self.opt = self.parser.parse_args(args=["--input", input, "--phase_input", phase_input])
@@ -66,6 +68,10 @@ class Options():
             self.opt.cl = self.defalut_hl
         else:
             self.opt.cl = cl
+        if amp_only == None:
+            self.opt.amp_only = self.default_amp_only
+        else:
+            self.opt.amp_only = amp_only
 
         return self.opt
 

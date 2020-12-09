@@ -35,14 +35,19 @@ def stftToWAV(amp_path, phase_path, output_path = "./", sr = 22050, wl = 1024, h
         phspec = np.load(files_path_phase[i])
         
         ampspec = ampspec[0,:,:] if ampspec.ndim == 3 else ampspec
+        ampspec = np.nan_to_num(ampspec)
         ampspec = ampspec[:,:min(ampspec.shape[1], phspec.shape[1])]
-        ampspec = np.append(ampspec, np.zeros([1, ampspec.shape[1]], dtype=np.float64), axis=0)
-        phspec = np.append(phspec, np.zeros([1, phspec.shape[1]], dtype=np.complex128), axis=0)
+        ampspec = np.append(ampspec, np.zeros([1, ampspec.shape[1]], dtype=np.float32), axis=0)
+        
+        phspec = phspec[0,:,:] if phspec.ndim == 3 else phspec
+        phspec = np.nan_to_num(phspec)
+        phspec = phspec[:,:min(phspec.shape[1], ampspec.shape[1])]
+        phspec = np.append(phspec, np.zeros([1, phspec.shape[1]], dtype=np.float32), axis=0)
         
         wav = generateWavFromSTFT(ampspec, phspec, wl, hl)
         
         o_path = Path(output_path) / Path("stft_inv") / path.name
-        print(str(o_path.name), " [", str(i + 1), "/", total_length, "]", sep="")
+        print(str(o_path.name), "\t[", str(i + 1), "/", total_length, "]", sep="")
         utils.saveWav(wav, o_path, sr)
     return
 
