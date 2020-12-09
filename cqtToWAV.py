@@ -26,7 +26,7 @@ def generateWavFromCQT(amp, phase, sr, hl):
 
     return iy
 
-def cqtToWAV(amp_path, phase_path, output_path, sr, hl):
+def cqtToWAV(amp_path, phase_path, output_path = "./", sr = 22050, hl = 512):
     files_path_amp = utils.getFilesPath(Path(amp_path), ".npy")
     files_path_phase = utils.getFilesPath(Path(phase_path), ".npy")
     
