@@ -64,7 +64,7 @@ def wavToSTFT(wav_path, output_path = "./", sr = 22050, wl = 1024, hl = 512, cro
     dt_now = '{:%Y-%m-%d %H:%m}'.format(dt_now)
 
     total_length = str(len(waves))
-    for i, wav in enumerate(waves[0:5]):
+    for i, wav in enumerate(waves):
         if crop:
             duration = div_duration
         else:
