@@ -1,3 +1,4 @@
 .vscode/
 .Rhistory
 __pycache__/
+audioconvert_log.json

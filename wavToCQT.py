@@ -15,6 +15,8 @@ from options import Options
 import utils
 import numpy as np
 import librosa
+import json
+import datetime
 from pathlib import Path
 
 def magphaseCQT(cqt_complex, crop = False, cl = 128):
@@ -60,13 +62,16 @@ def wavToCQT(wav_path, output_path = "./", sr = 22050, hl = 512, crop = False, c
     files_path = utils.getAudioFilesPath(wav_path)
     waves = [librosa.load(i, sr=sr, mono=not stereo) for i in files_path]
     div_duration = cl*hl/sr
+    num_of_segments = 0
+    dt_now = datetime.datetime.now()
+    dt_now = '{:%Y-%m-%d %H:%m}'.format(dt_now)
 
     total_length = str(len(waves))
     for i, wav in enumerate(waves):
         if crop:
             duration = div_duration
         else:
-            duration = len(wav) / 22050
+            duration = len(wav) / sr
 
         cqt = librosa.cqt(wav[0], sr, hop_length=hl, n_bins=n_bins, bins_per_octave=bins_per_octave)
 
@@ -80,14 +85,32 @@ def wavToCQT(wav_path, output_path = "./", sr = 22050, hl = 512, crop = False, c
 
         filename_list = [files_path[i].stem + "-" + str(index + 1) for index in range(div_num)] 
 
-        out_path_amp_list = [Path(output_path) / Path("cqt_amp") / Path(filename) for filename in filename_list]
-        out_path_phase_list = [Path(output_path) / Path("cqt_phase") / Path(filename) for filename in filename_list]
+        out_path_amp_list = [Path(output_path) / Path("amp") / Path(filename) for filename in filename_list]
+        out_path_phase_list = [Path(output_path) / Path("phase") / Path(filename) for filename in filename_list]
 
         for index, out_path_amp in enumerate(out_path_amp_list):
             print(str(out_path_amp.name) + "\t[", str(i + 1), "/", total_length, "]", "\tsignal duration(sec): ", duration, sep="")
             utils.saveNpy(magphase_list[index][0], out_path_amp)
             utils.saveNpy(magphase_list[index][1], out_path_phase_list[index])
+            num_of_segments += 1
 
+    log = {
+        "time":                 dt_now,
+        "convert_method":       "wavToSTFT",
+        "input_path":           str(Path(wav_path)),
+        "output_path":          str(Path(output_path)),
+        "sr":                   sr,
+        "window_length":        "None",
+        "hop_length":           hl,
+        "crop":                 crop,
+        "crop_length":          cl,
+        "stereo":               stereo,
+        "amp_only":             amp_only,
+        "number_of_songs":      total_length,
+        "number_of_segments":   num_of_segments}
+
+    with open(Path(output_path) / Path("audioconvert_log.json"), "w") as f:
+        json.dump(log, f, indent=4)
     return
 
 if __name__ == '__main__':

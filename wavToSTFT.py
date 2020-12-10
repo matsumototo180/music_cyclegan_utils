@@ -15,6 +15,8 @@ from options import Options
 import utils
 import numpy as np
 import librosa
+import json
+import datetime
 from pathlib import Path
 
 def magphaseSTFT(stft_complex, crop = False, cl = 128):
@@ -57,13 +59,16 @@ def wavToSTFT(wav_path, output_path = "./", sr = 22050, wl = 1024, hl = 512, cro
     files_path = utils.getAudioFilesPath(wav_path)
     waves = [librosa.load(i, sr=sr, mono=not stereo) for i in files_path]
     div_duration = cl*hl/sr
+    num_of_segments = 0
+    dt_now = datetime.datetime.now()
+    dt_now = '{:%Y-%m-%d %H:%m}'.format(dt_now)
 
     total_length = str(len(waves))
-    for i, wav in enumerate(waves):
+    for i, wav in enumerate(waves[0:5]):
         if crop:
             duration = div_duration
         else:
-            duration = len(wav) / 22050
+            duration = len(wav) / sr
 
         stft = librosa.stft(wav[0], wl, hl, wl)
 
@@ -77,13 +82,32 @@ def wavToSTFT(wav_path, output_path = "./", sr = 22050, wl = 1024, hl = 512, cro
 
         filename_list = [files_path[i].stem + "-" + str(index + 1) for index in range(div_num)] 
 
-        out_path_amp_list = [Path(output_path) / Path("stft_amp") / Path(filename) for filename in filename_list]
-        out_path_phase_list = [Path(output_path) / Path("stft_phase") / Path(filename) for filename in filename_list]
+        out_path_amp_list = [Path(output_path) / Path("amp") / Path(filename) for filename in filename_list]
+        out_path_phase_list = [Path(output_path) / Path("phase") / Path(filename) for filename in filename_list]
 
         for index, out_path_amp in enumerate(out_path_amp_list):
             print(str(out_path_amp.name) + "\t[", str(i + 1), "/", total_length, "]", "\tsignal duration(sec): ", duration, sep="")
             utils.saveNpy(magphase_list[index][0], out_path_amp)
             utils.saveNpy(magphase_list[index][1], out_path_phase_list[index])
+            num_of_segments += 1
+        
+    log = {
+            "time":                 dt_now,
+            "convert_method":       "wavToSTFT",
+            "input_path":           str(Path(wav_path)),
+            "output_path":          str(Path(output_path)),
+            "sr":                   sr,
+            "window_length":        wl,
+            "hop_length":           hl,
+            "crop":                 crop,
+            "crop_length":          cl,
+            "stereo":               stereo,
+            "amp_only":             amp_only,
+            "number_of_songs":      total_length,
+            "number_of_segments":   num_of_segments}
+
+    with open(Path(output_path) / Path("audioconvert_log.json"), "w") as f:
+        json.dump(log, f, indent=4)
 
     return
 
