@@ -1,0 +1,76 @@
+----------------------------------------------------------------------------------------------
+# dataset_property
+-----------------------------------------
+[name]						stft_rock-hip
+[date]						  1210
+[conv_method]				stft
+[wl]						1024
+[hl]						512
+[cl]						128
+[songs_per_genre]			990
+[segments_per_genre]		9900
+[segment_duration(sec)]		2.97
+[amount_size(GB)]			5.2
+
+# train_property
+----------------- Options ---------------
+               batch_size: 4                             	[default: 1]
+                    beta1: 0.5                           
+          checkpoints_dir: ./checkpoints                 
+           continue_train: False                         
+                crop_size: 256                           
+                 dataroot: ./datasets/stft_rock-hip/     	[default: None]
+             dataset_mode: unalignednpy                  	[default: unaligned]
+                direction: AtoB                          
+              display_env: main                          
+             display_freq: 400                           
+               display_id: 1                             
+            display_ncols: 4                             
+             display_port: 8097                          
+           display_server: http://localhost              
+          display_winsize: 256                           
+                    epoch: latest                        
+              epoch_count: 1                             
+                 gan_mode: lsgan                         
+                  gpu_ids: 0                             
+                init_gain: 0.02                          
+                init_type: normal                        
+                 input_nc: 1                             	[default: 3]
+                  isTrain: True                          	[default: None]
+                 lambda_A: 10.0                          
+                 lambda_B: 10.0                          
+          lambda_identity: 0.5                           
+                load_iter: 0                             	[default: 0]
+                load_size: 286                           
+                       lr: 0.0004                        	[default: 0.0002]
+           lr_decay_iters: 50                            
+                lr_policy: linear                        
+         max_dataset_size: inf                           
+                    model: cycle_gan                     
+                 n_epochs: 100                           
+           n_epochs_decay: 100                           
+               n_layers_D: 3                             
+                     name: stft_rock-hip                 	[default: experiment_name]
+                      ndf: 64                            
+                     netD: basic                         
+                     netG: resnet_9blocks                
+                      ngf: 64                            
+               no_dropout: True                          
+                  no_flip: False                         
+                  no_html: False                         
+                     norm: instance                      
+              num_threads: 4                             
+                output_nc: 1                             	[default: 3]
+                    phase: train                         
+                pool_size: 50                            
+               preprocess: none                          	[default: resize_and_crop]
+               print_freq: 100                           
+             save_by_iter: False                         
+          save_epoch_freq: 5                             
+         save_latest_freq: 5000                          
+           serial_batches: False                         
+                   suffix:                               
+         update_html_freq: 1000                          
+                  verbose: False                         
+----------------- End -------------------
+[command] python train.py --dataroot ./datasets/stft_rock-hip/ --name stft_rock-hip --model cycle_gan --input_nc 1 --output_nc 1 --preprocess none --n_epochs 100 --n_epochs_decay 100 --batch_size 4 --lr 0.0004 --dataset_mode unalignednpy
